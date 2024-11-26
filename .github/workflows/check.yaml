@@ -12,5 +12,7 @@ jobs:
       uses: volta-cli/action@v4
     - name: Check out code
       uses: actions/checkout@v4
+    - name: Install npm dependencies
+      run: npm install
     - name: Use npm run check
       run: npm run check
