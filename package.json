@@ -1,11 +1,13 @@
 {
-  "name": "conlogger",
+  "name": "shorekeeper",
   "version": "0.0.1",
   "description": "Console logger, easy to use and highly customizable.",
   "keywords": [
-    "electron",
     "console",
-    "logger"
+    "log",
+    "logger",
+    "reporter",
+    "stream"
   ],
   "files": [
     "./dist"
@@ -36,12 +38,12 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "homepage": "https://github.com/Hill-98/conlogger",
+  "homepage": "https://github.com/Hill-98/shorekeeper",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Hill-98/conlogger.git"
+    "url": "git+https://github.com/Hill-98/shorekeeper.git"
   },
-  "bugs": "https://github.com/Hill-98/conlogger/issues",
+  "bugs": "https://github.com/Hill-98/shorekeeper/issues",
   "author": "Zhong Lufan <lufanzhong@gmail.com>",
   "license": "MIT",
   "scripts": {

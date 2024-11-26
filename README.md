@@ -1,4 +1,4 @@
-# conlogger
+# shorekeeper
 
 Console logger, easy to use and highly customizable.
 

@@ -34,7 +34,7 @@ export type Options =
 
 class FileReporter {
   static readonly StreamWriteSymbol = Symbol(
-    'module:conlogger:symbol:stream:write',
+    'module:shorekeeper:symbol:stream:write',
   )
 
   readonly #file: string

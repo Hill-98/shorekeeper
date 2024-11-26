@@ -95,8 +95,8 @@ export async function report(reporters: Reporter[], data: Uint8Array | string) {
   if (errors.length !== 0) {
     // @ts-ignore NodeJS 14 no AggregateError
     const error = globalThis.AggregateError
-      ? new AggregateError(errors, 'conlogger: Call reporter error')
-      : new Error('conlogger: Call reporter error')
+      ? new AggregateError(errors, 'shorekeeper: Call reporter error')
+      : new Error('shorekeeper: Call reporter error')
     if (!('errors' in error)) {
       Object.defineProperty(error, 'errors', {
         configurable: true,
@@ -169,7 +169,7 @@ function callConsole(
   }
 }
 
-const consoleSymbol = Symbol('module:conlogger:symbol:console')
+const consoleSymbol = Symbol('module:shorekeeper:symbol:console')
 
 export function init(options?: InitOptions) {
   const opts: Options = {
