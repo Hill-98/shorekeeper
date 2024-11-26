@@ -152,5 +152,7 @@ class FileReporter {
 }
 
 export async function createFileReporter(file: string, options?: Options) {
-  return createStreamReporter(new FileReporter(file, options).stream)
+  return createStreamReporter(new FileReporter(file, options).stream, {
+    appendLf: true,
+  })
 }

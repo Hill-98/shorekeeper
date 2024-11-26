@@ -12,36 +12,40 @@ test(
         defaultEncoding: 'utf8',
         write(chunk, _, callback) {
           t.assert.strictEqual(chunk, 'StreamReporter')
-          callback(null)
+          callback()
           resolve()
         },
       })
       t.after(() => {
         stream.destroy()
       })
-      const reporter = createStreamReporter(stream, false)
+      const reporter = createStreamReporter(stream)
       reporter('StreamReporter')
     }),
 )
 
 test(
-  'StreamReporter Test with append lf',
+  'StreamReporter Test with custom options',
   { timeout: 1000 },
   (t: TestContext) =>
     new Promise((resolve) => {
       const stream = new Writable({
         decodeStrings: false,
         defaultEncoding: 'utf8',
-        write(chunk, _, callback) {
+        write(chunk, encoding, callback) {
           t.assert.strictEqual(chunk, 'StreamReporter\n')
-          callback(null)
+          t.assert.strictEqual(encoding, 'base64')
+          callback()
           resolve()
         },
       })
       t.after(() => {
         stream.destroy()
       })
-      const reporter = createStreamReporter(stream, true)
+      const reporter = createStreamReporter(stream, {
+        appendLf: true,
+        encoding: 'base64',
+      })
       reporter('StreamReporter')
     }),
 )
@@ -54,16 +58,16 @@ test(
       const timer = setTimeout(reject, 10)
       const stream = new Writable({
         write(chunk: Uint8Array, _, callback) {
-          callback(null)
-          clearTimeout(timer)
           t.assert.deepStrictEqual(Array.from(chunk), [1, 2, 3, 4, 5])
+          clearTimeout(timer)
+          callback()
           resolve()
         },
       })
       t.after(() => {
         stream.destroy()
       })
-      const reporter = createStreamReporter(stream, false)
+      const reporter = createStreamReporter(stream)
       reporter(new Uint8Array([1, 2, 3, 4, 5]))
     }),
 )
@@ -79,7 +83,7 @@ test(
         defaultEncoding: 'utf8',
         write(chunk, _, callback) {
           t.assert.strictEqual(chunk, 'StreamReporter')
-          callback(null)
+          callback()
           stream.end(() => {
             reporter('closed').catch((err: Error) => {
               t.assert.strictEqual(
@@ -94,7 +98,7 @@ test(
         clearTimeout(timer)
         stream.destroy()
       })
-      const reporter = createStreamReporter(stream, false)
+      const reporter = createStreamReporter(stream)
       reporter('StreamReporter')
     }),
 )
@@ -113,10 +117,10 @@ test(
           if (chunk === 'StreamReporter') {
             setTimeout(() => {
               str = 'drain'
-              callback(null)
+              callback()
             }, 200)
           } else if (chunk === str) {
-            callback(null)
+            callback()
             resolve()
           }
         },
@@ -124,7 +128,7 @@ test(
       t.after(() => {
         stream.destroy()
       })
-      const reporter = createStreamReporter(stream, false)
+      const reporter = createStreamReporter(stream)
       reporter('StreamReporter').catch(reject)
       reporter('drain').catch(reject)
     }),
@@ -147,7 +151,7 @@ test(
       stream.once('error', (err) => {
         t.assert.strictEqual(err, error)
       })
-      const reporter = createStreamReporter(stream, false)
+      const reporter = createStreamReporter(stream)
       reporter('StreamReporter').catch((err: Error) => {
         t.assert.strictEqual(err, error)
       })

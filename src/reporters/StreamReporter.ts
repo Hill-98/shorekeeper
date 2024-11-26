@@ -1,8 +1,14 @@
+import type { Writable } from 'stream'
 import type { Reporter } from '../index.ts'
 
+export interface StreamReporterOptions {
+  appendLf?: boolean
+  encoding?: BufferEncoding
+}
+
 export function createStreamReporter(
-  stream: NodeJS.WritableStream,
-  autoAppendLf = true,
+  stream: Writable,
+  options?: StreamReporterOptions,
 ): Reporter<Promise<void>> {
   let writable = true
 
@@ -24,10 +30,19 @@ export function createStreamReporter(
         return
       }
 
-      writable = stream.write(
-        autoAppendLf && typeof data === 'string' ? data.concat('\n') : data,
-        (err) => (err ? reject(err) : resolve()),
-      )
+      const callback = function streamReporterWriteCallback(err: any) {
+        return err ? reject(err) : resolve()
+      }
+
+      if (typeof data === 'string') {
+        writable = stream.write(
+          options?.appendLf ? data.concat('\n') : data,
+          options?.encoding ?? 'utf-8',
+          callback,
+        )
+      } else {
+        writable = stream.write(data, callback)
+      }
 
       if (!writable) {
         stream.once('drain', () => {
