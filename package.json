@@ -1,0 +1,75 @@
+{
+  "name": "conlogger",
+  "version": "0.0.1",
+  "description": "Console logger, easy to use and highly customizable.",
+  "keywords": [
+    "electron",
+    "console",
+    "logger"
+  ],
+  "files": [
+    "./dist"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./reporters/FileReporter": {
+      "import": "./dist/FileReporter.js",
+      "require": "./dist/FileReporter.cjs",
+      "types": "./dist/FileReporter.d.ts"
+    },
+    "./reporters/HttpReporter": {
+      "import": "./dist/HttpReporter.js",
+      "require": "./dist/HttpReporter.cjs",
+      "types": "./dist/HttpReporter.d.ts"
+    },
+    "./reporters/StreamReporter": {
+      "import": "./dist/StreamReporter.js",
+      "require": "./dist/StreamReporter.cjs",
+      "types": "./dist/StreamReporter.d.ts"
+    }
+  },
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "homepage": "https://github.com/Hill-98/conlogger",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hill-98/conlogger.git"
+  },
+  "bugs": "https://github.com/Hill-98/conlogger/issues",
+  "author": "Zhong Lufan <lufanzhong@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "prepublishOnly": "npm run check && npm run test && npm run build",
+    "build": "vite build && vite build --mode browser",
+    "check": "biome check && tsc --noEmit",
+    "test": "node --experimental-strip-types --experimental-test-coverage --test",
+    "prepare": "husky"
+  },
+  "engines": {
+    "node": ">= 14.0.0"
+  },
+  "dependencies": {
+    "callsites": "^4.2.0",
+    "is-promise": "^4.0.0",
+    "lodash.escaperegexp": "^4.1.2",
+    "serialize-error": "^11.0.3"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.9.4",
+    "@types/lodash.escaperegexp": "^4.1.9",
+    "@types/node": "latest",
+    "dts-bundle-generator": "^9.5.1",
+    "husky": "^9.1.6",
+    "typescript": "~5.7.2",
+    "vite": "^5.4.10"
+  },
+  "volta": {
+    "node": "22.11.0"
+  }
+}

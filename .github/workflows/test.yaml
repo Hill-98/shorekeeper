@@ -1,0 +1,16 @@
+name: Test
+on:
+  - push
+  - pull_request
+
+jobs:
+  check:
+    name: npm run test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Volta
+        uses: volta-cli/action@v4
+      - name: Check out code
+        uses: actions/checkout@v4
+      - name: Use npm run test
+        run: npm run test
