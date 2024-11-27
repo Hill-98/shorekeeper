@@ -4,15 +4,12 @@ on:
   - pull_request
 
 jobs:
-  check:
-    name: npm run test
+  test:
+    name: npm install-ci-test
     runs-on: ubuntu-latest
     steps:
       - name: Setup Volta
         uses: volta-cli/action@v4
       - name: Check out code
         uses: actions/checkout@v4
-      - name: Install npm dependencies
-        run: npm install
-      - name: Use npm run test
-        run: npm run test
+      - run: npm install-ci-test
