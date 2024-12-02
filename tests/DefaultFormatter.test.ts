@@ -6,7 +6,7 @@ import DefaultFormatter from '../src/DefaultFormatter.ts'
 
 const defaultObj = {
   level: 'info' as any,
-  time: '2024-11-13T09:42:44-08:00',
+  time: '2024-11-13T09:42:44.022-08:00',
 }
 const stacks = callsites()
 const result = DefaultFormatter(

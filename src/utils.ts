@@ -34,9 +34,10 @@ export function toISOStringWithOffset(date: Date, withTime = true) {
   }
   const hour = padStartZero(date.getHours(), 2)
   const minute = padStartZero(date.getMinutes(), 2)
-  const second = padStartZero(date.getSeconds(), 2)
+  const seconds = padStartZero(date.getSeconds(), 2)
+  const milliSeconds = padStartZero(date.getMilliseconds(), 3)
   const offset = date.getTimezoneOffset()
   const offsetHour = padStartZero(Math.abs(~~(offset / 60)), 2)
   const offsetMinute = padStartZero(offset % 60, 2)
-  return `${dateStr}T${hour}:${minute}:${second}${offset > 0 ? '-' : '+'}${offsetHour}:${offsetMinute}`
+  return `${dateStr}T${hour}:${minute}:${seconds}.${milliSeconds}${offset > 0 ? '-' : '+'}${offsetHour}:${offsetMinute}`
 }
