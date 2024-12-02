@@ -1,3 +1,9 @@
+// source from lodash.escaperegexp
+const reRegExpChar = /[\\^$.*+?()[\]{}|]/g
+const reHasRegExpChar = new RegExp(reRegExpChar.source)
+export const escapeRegExp = (str: string) =>
+  reHasRegExpChar.test(str) ? str.replace(reRegExpChar, '\\$&') : str
+
 export const isLastDateEarlier = (
   lastDate: Date,
   newDate: Date,

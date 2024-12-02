@@ -6,8 +6,7 @@ import { pipeline } from 'stream'
 import { promisify } from 'util'
 import type { BrotliOptions, ZlibOptions } from 'zlib'
 import { createBrotliCompress, createGzip } from 'zlib'
-import escapeRegExp from 'lodash.escaperegexp'
-import { isLastDateEarlier, toDateString } from '../utils.ts'
+import { escapeRegExp, isLastDateEarlier, toDateString } from '../utils.ts'
 import { createStreamReporter } from './StreamReporter.ts'
 
 export interface FileReporterOptions {

@@ -59,7 +59,6 @@
   "dependencies": {
     "callsites": "^4.2.0",
     "is-promise": "^4.0.0",
-    "lodash.escaperegexp": "^4.1.2",
     "serialize-error": "^11.0.3"
   },
   "devDependencies": {
