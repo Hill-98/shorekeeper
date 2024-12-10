@@ -2,6 +2,7 @@ import type { CallSite } from 'callsites'
 import callsites from 'callsites'
 import isPromise from 'is-promise'
 import DefaultFormatter from './DefaultFormatter.ts'
+import { DefaultFormatter } from './DefaultFormatter.ts'
 import { toISOStringWithOffset } from './utils.ts'
 
 export const ConsoleSymbol = Symbol('module:shorekeeper:symbol:console')
@@ -28,11 +29,11 @@ export interface FormatterData {
 export interface DefaultFormatterResult {
   level: ConsoleLogLevel
   message: any
-  stacks: {
+  stacks?: {
     method: string | null
     source: string
   }
-  time: string
+  time?: string
 }
 
 export type ConsoleModifier = (
@@ -87,6 +88,8 @@ export function firstStackSource(
   }
   return firstStack
 }
+
+export { DefaultFormatter } from './DefaultFormatter.ts'
 
 export async function report(reporters: Reporter[], data: Uint8Array | string) {
   const errors: any[] = []
@@ -163,21 +166,16 @@ function callConsole(
   }
 
   if (isReport && opts.reporters.length !== 0) {
-    try {
-      const data = opts.formatter({ level, stacks, time }, ...params)
-      const func = report.bind(null, opts.reporters)
-      if (isPromise(data)) {
-        data.then(func).catch(this.error)
-      } else {
-        func(data).catch(this.error)
-      }
-    } catch (err) {
-      this.error(err)
+    const data = opts.formatter({ level, stacks, time }, ...params)
+    const func = report.bind(null, opts.reporters)
+    if (isPromise(data)) {
+      data.then(func)
+    } else {
+      // noinspection JSIgnoredPromiseFromCall
+      func(data)
     }
   }
 }
-
-const consoleSymbol = Symbol('module:shorekeeper:symbol:console')
 
 export function init(options?: InitOptions) {
   const opts: Options = {

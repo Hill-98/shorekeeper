@@ -2,7 +2,7 @@ import { deepStrictEqual } from 'node:assert/strict'
 import { type TestContext, test } from 'node:test'
 import { pathToFileURL } from 'node:url'
 import callsites from 'callsites'
-import DefaultFormatter from '../src/DefaultFormatter.ts'
+import { DefaultFormatter } from '../src/index.ts'
 
 const defaultObj = {
   level: 'info' as any,

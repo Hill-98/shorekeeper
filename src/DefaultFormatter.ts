@@ -38,7 +38,7 @@ function serializeStacks(stacks: CallSite[]) {
   })
 }
 
-export default function DefaultFormatter(
+export function DefaultFormatter(
   data: FormatterData,
   ...messages: any[]
 ): string {
