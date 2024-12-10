@@ -28,6 +28,7 @@ export default defineConfig(async ({ command, mode }) => {
           {
             filePath: e,
             output: {
+              inlineDeclareGlobals: true,
               noBanner: true,
             },
           },

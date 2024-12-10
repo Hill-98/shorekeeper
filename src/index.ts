@@ -4,6 +4,14 @@ import isPromise from 'is-promise'
 import DefaultFormatter from './DefaultFormatter.ts'
 import { toISOStringWithOffset } from './utils.ts'
 
+export const ConsoleSymbol = Symbol('module:shorekeeper:symbol:console')
+
+declare global {
+  interface Console {
+    [ConsoleSymbol]: Console
+  }
+}
+
 export type ConsoleMethods = keyof Pick<
   Console,
   'log' | 'warn' | 'error' | 'debug' | 'info'
@@ -198,12 +206,13 @@ export function init(options?: InitOptions) {
   }
 
   if (consoleSymbol in opts.console) {
+  if (ConsoleSymbol in opts.console) {
     Object.defineProperties(
       opts.console,
-      Object.getOwnPropertyDescriptors(opts.console[consoleSymbol]),
+      Object.getOwnPropertyDescriptors(opts.console[ConsoleSymbol]),
     )
   } else {
-    Object.defineProperty(opts.console, consoleSymbol, {
+    Object.defineProperty(opts.console, ConsoleSymbol, {
       configurable: true,
       enumerable: false,
       value: Object.create(
@@ -217,7 +226,7 @@ export function init(options?: InitOptions) {
   for (const method of opts.methods) {
     Object.defineProperty(opts.console, method, {
       ...Object.getOwnPropertyDescriptor(opts.console, method),
-      value: callConsole.bind(opts.console, method, opts),
+      value: callConsole.bind(console[ConsoleSymbol], method, opts),
     })
   }
 }
