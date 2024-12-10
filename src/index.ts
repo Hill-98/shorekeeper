@@ -1,7 +1,7 @@
 import type { CallSite } from 'callsites'
 import callsites from 'callsites'
 import isPromise from 'is-promise'
-import DefaultFormatter from './DefaultFormatter.ts'
+import { DefaultConsoleModifier } from './DefaultConsoleModifier.ts'
 import { DefaultFormatter } from './DefaultFormatter.ts'
 import { toISOStringWithOffset } from './utils.ts'
 
@@ -20,11 +20,17 @@ export type ConsoleMethods = keyof Pick<
 
 export type ConsoleLogLevel = Exclude<ConsoleMethods, 'log'> | 'notice'
 
-export interface FormatterData {
+export interface ConsoleModifierData {
+  method: ConsoleMethods
   level: ConsoleLogLevel
   stacks?: CallSite[]
   time?: string
 }
+
+export type ConsoleModifier = (
+  data: ConsoleModifierData,
+  messages: any[],
+) => any[]
 
 export interface DefaultFormatterResult {
   level: ConsoleLogLevel
@@ -36,11 +42,10 @@ export interface DefaultFormatterResult {
   time?: string
 }
 
-export type ConsoleModifier = (
-  method: ConsoleMethods,
-  messages: any[],
-  stacks?: CallSite[],
-) => any[]
+export interface FilterResult {
+  call?: boolean
+  report?: boolean
+}
 
 export type Filter = (
   level: ConsoleLogLevel,
@@ -48,17 +53,18 @@ export type Filter = (
   stacks?: CallSite[],
 ) => boolean | FilterResult
 
+export interface FormatterData {
+  level: ConsoleLogLevel
+  stacks?: CallSite[]
+  time?: string
+}
+
 export type Formatter = (
   data: FormatterData,
   ...messages: any[]
 ) => Uint8Array | string | Promise<Uint8Array | string>
 
 export type Reporter<T = any> = (data: Uint8Array | string) => T
-
-export interface FilterResult {
-  call?: boolean
-  report?: boolean
-}
 
 export interface Options {
   console: Console
@@ -73,21 +79,10 @@ export interface Options {
 
 export type InitOptions = Partial<Options>
 
-export function firstStackSource(
-  stacks?: CallSite[],
-  trimPrefix?: string,
-): string | undefined {
-  const firstStack = stacks ? stacks[0] : undefined
-
-  if (firstStack) {
-    let filename = firstStack.getFileName()
-    if (typeof trimPrefix === 'string' && typeof filename === 'string') {
-      filename = filename.replace(trimPrefix, '')
-    }
-    return `${filename}:${firstStack.getLineNumber()}:${firstStack.getColumnNumber()}`
-  }
-  return firstStack
-}
+export {
+  DefaultConsoleModifier,
+  firstStackSource,
+} from './DefaultConsoleModifier.ts'
 
 export { DefaultFormatter } from './DefaultFormatter.ts'
 
@@ -139,27 +134,19 @@ function callConsole(
   const isReport = typeof is === 'boolean' ? is : is.report
 
   if (isCall) {
-    if (opts.consoleModifier === true) {
-      let source: string | undefined
-      try {
-        source = firstStackSource(
-          stacks,
-          typeof opts.source === 'string' ? opts.source : undefined,
-        )
-      } catch (err) {
-        this.error(err)
-      }
-      this[method](
-        ...[time, level.toUpperCase(), source]
-          .filter((v) => !!v)
-          .map((v) => `[${v}]`),
-        ...params,
-      )
-    } else if (typeof opts.consoleModifier === 'function') {
-      this[method](...opts.consoleModifier(method, params, stacks))
-    } else {
-      this[method](...params)
-    }
+    this[method](
+      ...(typeof opts.consoleModifier === 'function'
+        ? opts.consoleModifier(
+            {
+              method,
+              level,
+              stacks,
+              time,
+            },
+            params,
+          )
+        : params),
+    )
   }
 
   if (isReport && opts.reporters.length !== 0) {
@@ -200,7 +187,14 @@ export function init(options?: InitOptions) {
     opts.source = `file://${source}`
   }
 
-  if (consoleSymbol in opts.console) {
+  if (opts.consoleModifier === true) {
+    opts.consoleModifier = DefaultConsoleModifier.bind(null, {
+      source: opts.source !== false,
+      sourcePrefix: typeof opts.source === 'string' ? opts.source : undefined,
+      time: opts.time,
+    })
+  }
+
   if (ConsoleSymbol in opts.console) {
     Object.defineProperties(
       opts.console,
