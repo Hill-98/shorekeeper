@@ -9,7 +9,7 @@ export interface StreamReporterOptions {
 export function createStreamReporter(
   stream: Writable,
   options?: StreamReporterOptions,
-): Reporter<Promise<void>> {
+): Reporter {
   let writable = true
 
   return function StreamReporter(data) {

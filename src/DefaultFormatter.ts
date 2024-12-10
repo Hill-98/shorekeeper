@@ -1,6 +1,6 @@
 import type { CallSite } from 'callsites'
 import { serializeError } from 'serialize-error'
-import type { FormatterData } from './index.ts'
+import type { CallData } from './index.ts'
 
 function serialize(...params: any[]) {
   if (params.length === 0) {
@@ -38,10 +38,7 @@ function serializeStacks(stacks: CallSite[]) {
   })
 }
 
-export function DefaultFormatter(
-  data: FormatterData,
-  ...messages: any[]
-): string {
+export function DefaultFormatter(data: CallData, messages: any[]): string {
   return JSON.stringify({
     level: data.level.toLowerCase(),
     message: serialize(...messages),

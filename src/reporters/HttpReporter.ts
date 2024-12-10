@@ -4,7 +4,7 @@ export function createHttpReporter(
   endpoint: string,
   init?: RequestInit,
   fetch?: typeof globalThis.fetch,
-): Reporter<Promise<Response>> {
+): Reporter {
   const $fetch = fetch ?? globalThis.fetch
 
   if (typeof $fetch !== 'function') {

@@ -20,17 +20,14 @@ export type ConsoleMethods = keyof Pick<
 
 export type ConsoleLogLevel = Exclude<ConsoleMethods, 'log'> | 'notice'
 
-export interface ConsoleModifierData {
+export interface CallData {
   method: ConsoleMethods
   level: ConsoleLogLevel
   stacks?: CallSite[]
   time?: string
 }
 
-export type ConsoleModifier = (
-  data: ConsoleModifierData,
-  messages: any[],
-) => any[]
+export type ConsoleModifier = (data: CallData, messages: any[]) => any[]
 
 export interface DefaultFormatterResult {
   level: ConsoleLogLevel
@@ -47,24 +44,16 @@ export interface FilterResult {
   report?: boolean
 }
 
-export type Filter = (
-  level: ConsoleLogLevel,
-  messages: any[],
-  stacks?: CallSite[],
-) => boolean | FilterResult
+export type Filter = (data: CallData, messages: any[]) => boolean | FilterResult
 
-export interface FormatterData {
-  level: ConsoleLogLevel
-  stacks?: CallSite[]
-  time?: string
-}
+export type FormatterResult = Uint8Array | string
 
 export type Formatter = (
-  data: FormatterData,
-  ...messages: any[]
-) => Uint8Array | string | Promise<Uint8Array | string>
+  data: CallData,
+  messages: any[],
+) => FormatterResult | Promise<FormatterResult>
 
-export type Reporter<T = any> = (data: Uint8Array | string) => T
+export type Reporter = (data: FormatterResult) => any
 
 export interface Options {
   console: Console
@@ -124,7 +113,8 @@ function callConsole(
   const time = opts.time ? toISOStringWithOffset(new Date()) : undefined
   const level: ConsoleLogLevel = method === 'log' ? 'notice' : method
   const stacks = opts.source !== false ? callsites().splice(1) : undefined
-  const is = opts.filter ? opts.filter(level, params, stacks) : true
+  const data = { method, level, stacks, time }
+  const is = opts.filter ? opts.filter(data, params) : true
 
   if (is === false) {
     return
@@ -136,27 +126,19 @@ function callConsole(
   if (isCall) {
     this[method](
       ...(typeof opts.consoleModifier === 'function'
-        ? opts.consoleModifier(
-            {
-              method,
-              level,
-              stacks,
-              time,
-            },
-            params,
-          )
+        ? opts.consoleModifier(data, params)
         : params),
     )
   }
 
   if (isReport && opts.reporters.length !== 0) {
-    const data = opts.formatter({ level, stacks, time }, ...params)
+    const result = opts.formatter(data, params)
     const func = report.bind(null, opts.reporters)
-    if (isPromise(data)) {
-      data.then(func)
+    if (isPromise(result)) {
+      result.then(func)
     } else {
       // noinspection JSIgnoredPromiseFromCall
-      func(data)
+      func(result)
     }
   }
 }

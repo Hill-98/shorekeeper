@@ -1,5 +1,5 @@
 import type { CallSite } from 'callsites'
-import type { ConsoleModifierData } from './index.ts'
+import type { CallData } from './index.ts'
 
 export interface DefaultConsoleModifierOptions {
   source?: boolean
@@ -25,7 +25,7 @@ export function firstStackSource(
 
 export function DefaultConsoleModifier(
   opts: DefaultConsoleModifierOptions,
-  data: ConsoleModifierData,
+  data: CallData,
   messages: any[],
 ) {
   return [
