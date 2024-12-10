@@ -68,7 +68,7 @@ export interface Options {
   methods: ConsoleMethods[]
   reporters: Reporter[]
   source: boolean | string
-  timestamp: boolean
+  time: boolean
 }
 
 export type InitOptions = Partial<Options>
@@ -126,8 +126,9 @@ function callConsole(
   opts: Options,
   ...params: any[]
 ) {
+  const time = opts.time ? toISOStringWithOffset(new Date()) : undefined
   const level: ConsoleLogLevel = method === 'log' ? 'notice' : method
-  const stacks = opts.source ? callsites().splice(1) : undefined
+  const stacks = opts.source !== false ? callsites().splice(1) : undefined
   const is = opts.filter ? opts.filter(level, params, stacks) : true
 
   if (is === false) {
@@ -136,10 +137,6 @@ function callConsole(
 
   const isCall = typeof is === 'boolean' ? is : is.call
   const isReport = typeof is === 'boolean' ? is : is.report
-  const time =
-    opts.timestamp && (isCall || isReport)
-      ? toISOStringWithOffset(new Date())
-      : undefined
 
   if (isCall) {
     if (opts.consoleModifier === true) {
@@ -185,7 +182,7 @@ export function init(options?: InitOptions) {
     methods: ['error', 'debug', 'info', 'log', 'warn'],
     reporters: [],
     source: false,
-    timestamp: true,
+    time: true,
     ...(options ?? {}),
   }
 
