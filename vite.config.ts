@@ -65,6 +65,7 @@ export default defineConfig(async ({ command, mode }) => {
           ? []
           : [
               ...builtinModules,
+              ...builtinModules.map((v) => `node:${v}`),
               ...(isBrowser ? [] : Object.keys(pkg.dependencies)),
             ],
       },

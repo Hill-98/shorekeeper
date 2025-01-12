@@ -30,8 +30,7 @@
       },
       "style": {
         "useEnumInitializers": "off",
-        "useNodeAssertStrict": "error",
-        "useNodejsImportProtocol": "off"
+        "useNodeAssertStrict": "error"
       },
       "suspicious": {
         "noExplicitAny": "off"

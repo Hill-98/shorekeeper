@@ -87,21 +87,11 @@ export async function report(reporters: Reporter[], data: Uint8Array | string) {
       errors.push(err)
     }
   }
-  if (errors.length !== 0) {
-    // @ts-ignore NodeJS 14 no AggregateError
-    const error = globalThis.AggregateError
-      ? new AggregateError(errors, 'shorekeeper: Call reporter error')
-      : new Error('shorekeeper: Call reporter error')
-    if (!('errors' in error)) {
-      Object.defineProperty(error, 'errors', {
-        configurable: true,
-        enumerable: false,
-        value: errors,
-        writable: true,
-      })
-    }
-    throw error
-  }
+  return errors.length === 0
+    ? undefined
+    : Promise.reject(
+        new AggregateError(errors, 'shorekeeper: Call reporter error'),
+      )
 }
 
 function callConsole(
@@ -138,7 +128,7 @@ function callConsole(
       result.then(func)
     } else {
       // noinspection JSIgnoredPromiseFromCall
-      func(result)
+      Promise.resolve().then(func.bind(null, result))
     }
   }
 }

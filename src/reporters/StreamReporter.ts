@@ -1,4 +1,4 @@
-import type { Writable } from 'stream'
+import type { Writable } from 'node:stream'
 import type { Reporter } from '../index.ts'
 
 export interface StreamReporterOptions {

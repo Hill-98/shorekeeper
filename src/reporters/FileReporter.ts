@@ -1,11 +1,11 @@
-import { createReadStream, createWriteStream, readdir, rm, truncate } from 'fs'
-import type { ParsedPath } from 'path'
-import { join, parse, resolve } from 'path'
-import type { Writable } from 'stream'
-import { pipeline } from 'stream'
-import { promisify } from 'util'
-import type { BrotliOptions, ZlibOptions } from 'zlib'
-import { createBrotliCompress, createGzip } from 'zlib'
+import { createReadStream, createWriteStream } from 'node:fs'
+import { readdir, rm, truncate } from 'node:fs/promises'
+import type { ParsedPath } from 'node:path'
+import { join, parse, resolve } from 'node:path'
+import type { Writable } from 'node:stream'
+import { pipeline } from 'node:stream/promises'
+import type { BrotliOptions, ZlibOptions } from 'node:zlib'
+import { createBrotliCompress, createGzip } from 'node:zlib'
 import { escapeRegExp, isLastDateEarlier, toDateString } from '../utils.ts'
 import { createStreamReporter } from './StreamReporter.ts'
 
@@ -69,7 +69,7 @@ class FileReporter {
     const regex = new RegExp(
       `^${escapeRegExp(this.#path.name)}\\.(\\d{4}-\\d{2}-\\d{2})\\.`,
     )
-    const filenames = await promisify(readdir)(this.#path.dir, 'utf-8')
+    const filenames = await readdir(this.#path.dir, 'utf-8')
     const archivedFiles: { file: string; date: Date }[] = []
 
     for (const filename of filenames) {
@@ -90,7 +90,7 @@ class FileReporter {
         .splice(0, archivedFiles.length - this.#opts.maxKeepCount)
         .map((item) => item.file)
       for (const deleteFile of deleteFiles) {
-        await promisify(rm)(deleteFile)
+        await rm(deleteFile)
       }
     }
   }
@@ -123,8 +123,8 @@ class FileReporter {
         mode: this.#opts.mode,
       }),
     )
-    await promisify(pipeline)([createReadStream(this.#file), ...streams])
-    await promisify(truncate)(this.#file, 0)
+    await pipeline([createReadStream(this.#file), ...streams])
+    await truncate(this.#file, 0)
   }
 
   #touch(date: Date) {
