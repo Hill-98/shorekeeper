@@ -1,6 +1,6 @@
 {
   "name": "shorekeeper",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Console logger, easy to use and highly customizable.",
   "keywords": [
     "console",
@@ -71,6 +71,6 @@
     "vite": "^6.0.0"
   },
   "volta": {
-    "node": "22.11.0"
+    "node": "22.13.0"
   }
 }
