@@ -163,10 +163,11 @@ export function init(options?: InitOptions) {
     if (!source.startsWith('/')) {
       source = `/${source}`
     }
-    if (!source.endsWith('/')) {
-      source += '/'
-    }
     opts.source = `file://${source}`
+  }
+
+  if (typeof opts.source === 'string' && !opts.source.endsWith('/')) {
+    opts.source += '/'
   }
 
   if (opts.consoleModifier === true) {
@@ -197,7 +198,7 @@ export function init(options?: InitOptions) {
   for (const method of opts.methods) {
     Object.defineProperty(opts.console, method, {
       ...Object.getOwnPropertyDescriptor(opts.console, method),
-      value: callConsole.bind(console[ConsoleSymbol], method, opts),
+      value: callConsole.bind(opts.console[ConsoleSymbol], method, opts),
     })
   }
 }
